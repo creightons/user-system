@@ -1,1 +1,3 @@
 user-system-env
+*.pyc
+settings.cfg
