@@ -8,7 +8,7 @@ def index():
 	if 'username' in session:
 		#return 'Logged in as %s' % escape(session['username'])
 		return render_template('main.html', logged_in=True, username=escape(session['username']))
-	return render_template('main_html', loggin_in=False)
+	return render_template('main.html', loggin_in=False)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -19,7 +19,7 @@ def login():
 	# GET
 	return render_template('login.html')
 
-@app.route('/logout' methods=['POST'])
+@app.route('/logout', methods=['POST'])
 def logout():
 	session.pop('username', None)
 	return redirect(url_for('index'))
