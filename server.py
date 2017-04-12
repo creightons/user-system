@@ -1,17 +1,14 @@
-from flask import Flask, session, request, escape, redirect, url_for
+from flask import Flask, session, request, escape, redirect, url_for, \
+	render_template
 app = Flask(__name__)
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 
 @app.route('/')
 def index():
 	if 'username' in session:
-		return 'Logged in as %s' % escape(session['username'])
-	return '''
-		<div>Greetings</div>
-		<a href='/login'>Go to Login</a>
-	'''
-
-
+		#return 'Logged in as %s' % escape(session['username'])
+		return render_template('main.html', logged_in=True, username=escape(session['username']))
+	return render_template('main_html', loggin_in=False)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -20,14 +17,9 @@ def login():
 		return redirect(url_for('index'))
 
 	# GET
-	return '''
-		<form method='post'>
-			<p><input type=text name=username>
-			<p><input type=submit value=Login>
-		</form>
-	'''
+	return render_template('login.html')
 
-@app.route('/logout')
+@app.route('/logout' methods=['POST'])
 def logout():
 	session.pop('username', None)
 	return redirect(url_for('index'))

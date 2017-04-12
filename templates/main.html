@@ -1,0 +1,11 @@
+{% block content %}
+	<div>Greetings</div>
+	{% if logged_in == True %}
+		<div>Logged in as {{username}}</div>
+		<form method='post' action='logout'>
+			<input type='submit' value='Logout'>
+		</form>
+	{% else %}
+		<a href='/login'>Go to Login</a>
+	{% endif %}
+{% endblock %}
