@@ -1,3 +1,3 @@
 #!/bin/sh
-export FLASKR_SETTINGS=./settings.cfg
+FLASKR_SETTINGS=`pwd`/settings.cfg
 FLASK_APP=server.py flask run
