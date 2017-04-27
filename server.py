@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 import os
 
@@ -20,7 +20,18 @@ class User(db.Model):
         self.username = username
         self.password = password
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
 #	return "Welcome to the main page"
-	return render_template('index.html')
+	if request.method == 'POST':
+		username = request.form['username']
+		password = request.form['password']
+		new_user = User(username, password)
+
+		db.session.add(new_user)
+		db.session.commit()
+
+	users = User.query.all()
+	print users
+	usernames = [ user.username for user in users ]
+	return render_template('index.html', usernames=usernames)
