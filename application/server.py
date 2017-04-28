@@ -1,24 +1,20 @@
 from flask import Flask, render_template, request
-from flask_sqlalchemy import SQLAlchemy
 import os
 
 app = Flask(__name__)
 
 path = os.path.dirname( os.path.realpath(__file__) )
-database_path = os.path.join(path, 'mydb.sqlite')
+database_path = os.path.join(path, '../mydb.sqlite')
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + database_path
 
-db = SQLAlchemy(app)
+from database import db
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True)
-    password = db.Column(db.String(120))
+# Initialize Database
+db.init_app(app)
 
-    def __init__(self, username, password):
-        self.username = username
-        self.password = password
+# Import models after database is initialized
+from models.user import User
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -32,6 +28,6 @@ def index():
 		db.session.commit()
 
 	users = User.query.all()
-	print users
 	usernames = [ user.username for user in users ]
+
 	return render_template('index.html', usernames=usernames)
