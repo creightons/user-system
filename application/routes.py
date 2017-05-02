@@ -1,5 +1,5 @@
 from flask import request, render_template
-from models.user import User
+from models import User
 from database import db
 
 def apply_routes(app):
