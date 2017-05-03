@@ -15,6 +15,18 @@ def apply_routes(app):
 			db.session.commit()
 
 		users = User.query.all()
-		usernames = [ user.username for user in users ]
+		user_data = [ { 'name': user.username, 'url': '/user_profile/' + str(user.id) } for user in users ]
 
-		return render_template('index.html', usernames=usernames)
+		return render_template('index.html', user_data=user_data)
+
+
+	@app.route('/user_profile/<user_id>')
+	def user_route(user_id):
+		
+		user = User.query.filter(User.id == user_id).first()
+		context = {
+			'username': user.username,
+			'id': user.id,
+		}
+
+		return render_template('user_profile.html', context=context)

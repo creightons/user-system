@@ -13,7 +13,9 @@
 
 	<h2>Existing Users</h2>
 	<ul>
-	{% for name in usernames %}
-		<li>{{ name }}</li>
+	{% for data in user_data %}
+		<a href='{{data.url}}'>
+			<li>{{ data.name }}</li>
+		</a>
 	{% endfor %}
 {% endblock %}
