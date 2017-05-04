@@ -2,16 +2,33 @@
 {% block body %}
 	<h1>Profile</h1>
 	<div>Username = {{ context.username }}</div>
-	<div>Id = {{ context.id }}</div>
+	<div>Id = {{ context.user_id }}</div>
 	
 	<h2>User Permissions</h2>
 	
-	<ul>
-	{% for permission in context.permissions %}
-		<li>{{ permission }}</li>
-	{% else %}
-		<li>User has no permissions</li>
-	{% endfor %}
-	</ul>
+	<form action='/permissions' method='POST'>
+		<ul name='permissions' size='10' multiple>
+		{% for data in context.permissions %}
+			<li>
+				<input
+					type='checkbox'
+					value='{{data.id}}'
+					selected='{{data.user_has_permission}}'
+					id='{{ 'permission-'  ~ data.id }}'
+					name='user_permission'
+				>
+				<label for='{{ 'permission-'  ~ data.id }}'>
+					{{data.description}}
+				</label>
+			</li>
+		{% else %}
+			<li>There are no permissions</li>
+		{% endfor %}
+		</ul>
+		<input type='hidden' name='user_id' value='{{context.user_id}}'>
+		<input type='submit' value='Update Permissions'>
+	</form>
+
+	<a href='/'>Home</a>
 
 {% endblock %}
