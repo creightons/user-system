@@ -3,4 +3,15 @@
 	<h1>Profile</h1>
 	<div>Username = {{ context.username }}</div>
 	<div>Id = {{ context.id }}</div>
+	
+	<h2>User Permissions</h2>
+	
+	<ul>
+	{% for permission in context.permissions %}
+		<li>{{ permission }}</li>
+	{% else %}
+		<li>User has no permissions</li>
+	{% endfor %}
+	</ul>
+
 {% endblock %}

@@ -24,9 +24,13 @@ def apply_routes(app):
 	def user_route(user_id):
 		
 		user = User.query.filter(User.id == user_id).first()
+
+		user_permissions = [ permission.description for permission in user.permissions ]
+
 		context = {
 			'username': user.username,
 			'id': user.id,
+			'permissions': user_permissions,
 		}
 
 		return render_template('user_profile.html', context=context)
