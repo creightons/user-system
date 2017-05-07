@@ -1,6 +1,6 @@
 from __future__ import print_function # Print goes to STDERR
 import sys
-from flask import request, render_template, redirect
+from flask import request, render_template, redirect, session, flash
 from models import User, Permission, user_permissions
 from database import db
 
@@ -9,6 +9,9 @@ def pr(arg):
 	print(arg, file=sys.stderr)
 
 def apply_routes(app):
+
+
+
 	@app.route('/', methods=['GET', 'POST'])
 	def index():
 	#	return "Welcome to the main page"
@@ -23,7 +26,19 @@ def apply_routes(app):
 		users = User.query.all()
 		user_data = [ { 'name': user.username, 'url': '/user_profile/' + str(user.id) } for user in users ]
 
-		return render_template('index.html', user_data=user_data)
+		logged_in = False
+		current_user = None
+		if session.get('username') != None:
+			logged_in = True
+			current_user = session['username']
+
+		return render_template(
+			'index.html',
+			user_data=user_data,
+			logged_in=logged_in,
+			current_user=current_user
+		)
+
 
 
 	@app.route('/user_profile/<user_id>')
@@ -51,6 +66,8 @@ def apply_routes(app):
 		}
 
 		return render_template('user_profile.html', context=context)
+
+
 
 	@app.route('/permissions', methods=['POST'])
 	def add_permissions():
@@ -86,3 +103,38 @@ def apply_routes(app):
 		redirect_url = '/user_profile/' + data['user_id']
 
 		return redirect(redirect_url)
+
+
+
+	@app.route('/login', methods=['POST'])
+	def login():
+		user = User.query.filter_by(
+			username=request.form['username'],
+			password=request.form['password']
+		).first()
+
+		if user == None:
+			flash('ERROR: Invalid Credentials')
+			return redirect('/')
+		else:
+			session['username'] = request.form['username']
+			return redirect('/main')
+
+
+
+	@app.route('/logout', methods=['POST'])
+	def logout():
+		session.pop('username', None)
+		return redirect('/')
+
+
+
+	@app.route('/main', methods=['GET'])
+	def main():
+		if 'username' not in session:
+			return redirect('/')
+
+		return render_template(
+			'main.html',
+			username=session['username']
+		)

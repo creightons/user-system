@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block body %}
+	
+	<h1>Welcome to the main page</h1>
+	<div>Username: {{ username }}</div>
+	<form method='POST' action='/logout'>
+		<input type='submit' value='Logout'></input>
+	</form>
+
+{% endblock %}
