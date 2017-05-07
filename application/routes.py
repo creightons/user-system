@@ -3,14 +3,15 @@ import sys
 from flask import request, render_template, redirect, session, flash
 from models import User, Permission, user_permissions
 from database import db
+from route_middleware import is_authorized, check_permission
+from constants import PERMISSION_ONE, PERMISSION_TWO, PERMISSION_THREE, \
+	PERMISSION_FOUR, PERMISSION_FIVE
 
 # Print data to STDERR in Flask terminal
 def pr(arg):
 	print(arg, file=sys.stderr)
 
 def apply_routes(app):
-
-
 
 	@app.route('/', methods=['GET', 'POST'])
 	def index():
@@ -48,7 +49,6 @@ def apply_routes(app):
 		permissions = Permission.query.all()
 
 		user_permission_map = { permission.id : True for permission in user.permissions }
-		pr(user.permissions)
 
 		permission_context = []
 
@@ -130,6 +130,7 @@ def apply_routes(app):
 
 
 	@app.route('/main', methods=['GET'])
+	@is_authorized
 	def main():
 		if 'username' not in session:
 			return redirect('/')
@@ -138,3 +139,41 @@ def apply_routes(app):
 			'main.html',
 			username=session['username']
 		)
+
+
+
+	@app.route('/permission-one', methods=['GET'])
+	@is_authorized
+	@check_permission(PERMISSION_ONE)
+	def permission_one_page():
+		return render_template('permission_page.html', permission_type='One')
+
+	@app.route('/permission-two', methods=['GET'])
+	@is_authorized
+	@check_permission(PERMISSION_TWO)
+	def permission_two_page():
+		return render_template('permission_page.html', permission_type='Two')
+
+
+
+	@app.route('/permission-three', methods=['GET'])
+	@is_authorized
+	@check_permission(PERMISSION_THREE)
+	def permission_three_page():
+		return render_template('permission_page.html', permission_type='Three')
+
+
+
+	@app.route('/permission-four', methods=['GET'])
+	@is_authorized
+	@check_permission(PERMISSION_ONE)
+	def permission_four_page():
+		return render_template('permission_page.html', permission_type='Four')
+
+
+
+	@app.route('/permission-five', methods=['GET'])
+	@is_authorized
+	@check_permission(PERMISSION_FIVE)
+	def permission_five_page():
+		return render_template('permission_page.html', permission_type='Five')
