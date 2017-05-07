@@ -13,9 +13,11 @@
 				<input
 					type='checkbox'
 					value='{{data.id}}'
-					selected='{{data.user_has_permission}}'
 					id='{{ 'permission-'  ~ data.id }}'
 					name='user_permission'
+					{% if data.user_has_permission == true %}
+						checked
+					{% endif %}
 				>
 				<label for='{{ 'permission-'  ~ data.id }}'>
 					{{data.description}}

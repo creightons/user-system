@@ -1,9 +1,6 @@
 from application.database import db
 from user_permissions import user_permissions
 
-def print_data():
-	return "this file was called"
-
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True)

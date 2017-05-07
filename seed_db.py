@@ -11,6 +11,16 @@ def add_permissions(db, permissions):
 		permission = models.Permission(row['id'], row['description'])
 		db.session.add(permission)
 
+def add_user_permissions(db, user_permissions_data):
+	for row in user_permissions_data:
+		db.session.connection().execute(
+			models.user_permissions.insert().values(
+				userid=row['userid'],
+				permissionid=row['permissionid']
+			)
+		)
+
+
 user_data = [
 	{ 'username': 'user1', 'password': 'pass1' },
 	{ 'username': 'user2', 'password': 'pass2' },
@@ -29,10 +39,17 @@ permission_data = [
 	{ 'id': 5, 'description': 'Permission 5', },
 ]
 
+user_permissions_data = [
+	{ 'userid': 1, 'permissionid': 1 },
+	{ 'userid': 1, 'permissionid': 2 },
+	{ 'userid': 1, 'permissionid': 3 },
+	{ 'userid': 1, 'permissionid': 4 },
+]
 
 
 with app.test_request_context():
 	from application import models
 	add_users(db, user_data)
 	add_permissions(db, permission_data)
+	add_user_permissions(db, user_permissions_data)
 	db.session.commit()

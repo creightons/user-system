@@ -1,7 +1,7 @@
 from __future__ import print_function # Print goes to STDERR
 import sys
 from flask import request, render_template, redirect
-from models import User, Permission
+from models import User, Permission, user_permissions
 from database import db
 
 # Print data to STDERR in Flask terminal
@@ -33,8 +33,10 @@ def apply_routes(app):
 		permissions = Permission.query.all()
 
 		user_permission_map = { permission.id : True for permission in user.permissions }
+		pr(user.permissions)
 
 		permission_context = []
+
 		for permission in permissions:
 			permission_context.append({
 				'id': permission.id,
@@ -53,6 +55,34 @@ def apply_routes(app):
 	@app.route('/permissions', methods=['POST'])
 	def add_permissions():
 		data = request.form
+		user_id = data['user_id']
+		# Convert new permission ids from string to int for comparison with existing permissions
+		new_permission_id_list = [ int(new_id) for new_id in data.getlist('user_permission') ]
+		user = User.query.get(user_id)
+
+		# New Permission Ids are returned as Strings
+		new_permission_id_hash = { permission_id : True for permission_id in new_permission_id_list }
+
+		existing_permission_id_hash = { permission.id : True for permission in user.permissions }
+
+		permissions_to_delete = [ permission for permission in user.permissions
+			if permission.id not in new_permission_id_hash ]
+
+		permission_ids_to_add = [ permission_id for permission_id in new_permission_id_list
+			if permission_id not in existing_permission_id_hash ]
+
+		if len(permission_ids_to_add) > 0 :
+			for permission_id in permission_ids_to_add:
+				db.session.connection().execute(
+					user_permissions.insert().values(userid=user_id, permissionid=permission_id)
+				)
+			db.session.commit()
+
+		if len(permissions_to_delete) > 0 :
+			for permission in permissions_to_delete:
+				user.permissions.remove(permission)
+			db.session.commit()
+
 		redirect_url = '/user_profile/' + data['user_id']
-		pr(data)
-		return redirect(redirect_url, code=200)
+
+		return redirect(redirect_url)
