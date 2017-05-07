@@ -47,11 +47,9 @@ def apply_routes(app):
 		user = User.query.filter(User.id == user_id).first()
 
 		permissions = Permission.query.all()
-
 		user_permission_map = { permission.id : True for permission in user.permissions }
 
 		permission_context = []
-
 		for permission in permissions:
 			permission_context.append({
 				'id': permission.id,
@@ -102,6 +100,7 @@ def apply_routes(app):
 
 		redirect_url = '/user_profile/' + data['user_id']
 
+		flash('SUCCESS: Updated permissions for user ID: ' + data['user_id'])
 		return redirect(redirect_url)
 
 
@@ -132,12 +131,14 @@ def apply_routes(app):
 	@app.route('/main', methods=['GET'])
 	@is_authorized
 	def main():
-		if 'username' not in session:
-			return redirect('/')
+		user = User.query.filter_by(username=session['username']).first()
 
+		permission_descriptions = [ permission.description for permission in user.permissions ]
+		
 		return render_template(
 			'main.html',
-			username=session['username']
+			username=session['username'],
+			permission_descriptions=permission_descriptions
 		)
 
 
@@ -147,6 +148,8 @@ def apply_routes(app):
 	@check_permission(PERMISSION_ONE)
 	def permission_one_page():
 		return render_template('permission_page.html', permission_type='One')
+
+
 
 	@app.route('/permission-two', methods=['GET'])
 	@is_authorized

@@ -7,6 +7,15 @@
 		<input type='submit' value='Logout'></input>
 	</form>
 
+	<h1>Permissions</h1>
+	<ul>
+	{% for description in permission_descriptions %}
+		<li>{{ description }}</li>
+	{% else %}
+		<li>You have no permissions</li>
+	{% endfor%}
+	</ul>
+
 	<h1>Limited Access Pages</h1>
 	<ul>
 		<a href='/permission-one'>
