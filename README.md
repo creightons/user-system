@@ -19,3 +19,5 @@ A simple web-app implementing a permissions-based access control system. Every u
 - Create the SQLITE database `./make-db.sh` (Needs to be run from a Bash shell)
 
 - Run the application `./run.sh` (Needs to be run from a Bash shell)
+
+- Open a browser and go to localhost:5000 to open the app
